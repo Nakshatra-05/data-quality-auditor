@@ -1,0 +1,30 @@
+{
+  "filename": "employees.csv",
+  "scanned_at": "2026-06-05 14:39:01",
+  "score": {
+    "total": 84,
+    "grade": "Good",
+    "breakdown": {
+      "missing_values": 57,
+      "duplicates": 98,
+      "outliers": 93,
+      "invalid_values": 85,
+      "type_issues": 100
+    }
+  },
+  "summary": {
+    "missing_cells": 109,
+    "duplicates": 4,
+    "outlier_cols": [
+      "age",
+      "bonus"
+    ],
+    "invalid_checks": [
+      "age_negative",
+      "invalid_emails",
+      "future_joining_dates",
+      "zero_age"
+    ],
+    "type_issues": []
+  }
+}

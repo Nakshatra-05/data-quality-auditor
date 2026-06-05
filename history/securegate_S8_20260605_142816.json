@@ -1,0 +1,22 @@
+{
+  "filename": "securegate_S8.csv",
+  "scanned_at": "2026-06-05 14:28:16",
+  "score": {
+    "total": 75,
+    "grade": "Good",
+    "breakdown": {
+      "missing_values": 0,
+      "duplicates": 100,
+      "outliers": 100,
+      "invalid_values": 100,
+      "type_issues": 100
+    }
+  },
+  "summary": {
+    "missing_cells": 13,
+    "duplicates": 0,
+    "outlier_cols": [],
+    "invalid_checks": [],
+    "type_issues": []
+  }
+}
