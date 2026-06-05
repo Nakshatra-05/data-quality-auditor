@@ -388,76 +388,22 @@ with main_tab3:
 with main_tab4:
 
     # Header banner
-    st.markdown("""
-    <div style="background:linear-gradient(135deg,#0d1117,#1a1f2e);
-                border:1px solid #30363d;border-radius:16px;
-                padding:24px 32px;margin-bottom:24px;">
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;">
-            <span style="font-size:32px;">🤖</span>
-            <div>
-                <div style="font-size:22px;font-weight:700;color:#fff;">
-                    Agentic Root Cause Analysis
-                </div>
-                <div style="color:#8b949e;font-size:14px;margin-top:2px;">
-                    Multi-agent AI pipeline — monitors, investigates, recommends, and reports
-                </div>
-            </div>
-        </div>
-        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
-            <span style="background:#1f2d1f;border:1px solid #238636;color:#3fb950;
-                         padding:4px 12px;border-radius:20px;font-size:12px;">
-                🔵 Monitor Agent
-            </span>
-            <span style="background:#2d1f0e;border:1px solid #d29922;color:#e3b341;
-                         padding:4px 12px;border-radius:20px;font-size:12px;">
-                🟠 Root Cause Agent
-            </span>
-            <span style="background:#1f2d1f;border:1px solid #238636;color:#3fb950;
-                         padding:4px 12px;border-radius:20px;font-size:12px;">
-                🟢 Recommendation Agent
-            </span>
-            <span style="background:#1a1f2e;border:1px solid #388bfd;color:#79c0ff;
-                         padding:4px 12px;border-radius:20px;font-size:12px;">
-                🟣 Report Agent
-            </span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("## 🤖 Agentic Root Cause Analysis")
+    st.caption("Multi-agent AI pipeline — monitors, investigates, recommends, and reports")
+
+    # Agent pills
+    col_a, col_b, col_c, col_d = st.columns(4)
+    col_a.info("📡 Monitor Agent\nClassifies issues by severity")
+    col_b.warning("🔬 Root Cause Agent\nInvestigates why issues exist")
+    col_c.info("💡 Recommendation Agent\nGenerates specific code fixes")
+    col_d.success("📝 Report Agent\nWrites executive summary")
+
+    st.divider()
 
     agent_file = st.file_uploader("Upload CSV for agent analysis", type=["csv"], key="agent")
 
     if not agent_file:
-        # Pipeline diagram when no file uploaded
-        st.markdown("""
-        <div style="margin:32px 0;">
-            <div style="display:flex;align-items:center;justify-content:center;
-                        gap:0;flex-wrap:nowrap;overflow-x:auto;padding:16px 0;">
-        """ + "".join([
-            f"""
-            <div style="text-align:center;min-width:110px;">
-                <div style="background:{bg};border:1px solid {border};
-                            border-radius:12px;padding:14px 10px;margin:0 4px;">
-                    <div style="font-size:24px;">{icon}</div>
-                    <div style="color:{color};font-size:11px;font-weight:600;
-                                margin-top:6px;">{name}</div>
-                    <div style="color:#8b949e;font-size:10px;margin-top:2px;">{desc}</div>
-                </div>
-            </div>
-            {"<div style='color:#30363d;font-size:20px;'>→</div>" if i < 4 else ""}
-            """
-            for i, (icon, name, desc, bg, border, color) in enumerate([
-                ("📡", "Monitor", "Classify issues", "#0d1f0d", "#238636", "#3fb950"),
-                ("🔬", "Root Cause", "Investigate why", "#2d1f0e", "#d29922", "#e3b341"),
-                ("💡", "Recommend", "Generate fixes", "#0d1f1f", "#1f6feb", "#79c0ff"),
-                ("📝", "Report", "Executive summary", "#1a0d2e", "#8957e5", "#d2a8ff"),
-            ])
-        ]) + """
-            </div>
-        </div>
-        <div style="text-align:center;color:#8b949e;font-size:13px;">
-            Upload a CSV above to start the agent pipeline
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("Upload a CSV file above to start the agent pipeline.")
 
     else:
         df_agent   = pd.read_csv(agent_file)
@@ -467,70 +413,36 @@ with main_tab4:
 
         if st.button("🚀 Run Agent Pipeline", type="primary"):
 
-            # Pipeline steps UI
+            # ── Pipeline progress ─────────────────────────
             steps = [
-                ("🔍", "Validating dataset",             "#8b949e"),
-                ("📡", "Monitor Agent classifying",      "#3fb950"),
-                ("🔬", "Root Cause Agent investigating", "#e3b341"),
-                ("💡", "Recommendation Agent fixing",    "#79c0ff"),
-                ("📝", "Report Agent writing",           "#d2a8ff"),
+                ("🔍", "Step 1 — Validating dataset"),
+                ("📡", "Step 2 — Monitor Agent classifying issues"),
+                ("🔬", "Step 3 — Root Cause Agent investigating"),
+                ("💡", "Step 4 — Recommendation Agent generating fixes"),
+                ("📝", "Step 5 — Report Agent writing executive summary"),
             ]
 
-            step_placeholders = []
-            pipeline_html = '<div style="display:flex;flex-direction:column;gap:8px;margin:16px 0;">'
-            for icon, label, color in steps:
-                pipeline_html += f"""
-                <div style="display:flex;align-items:center;gap:12px;
-                            background:#161b22;border:1px solid #30363d;
-                            border-radius:8px;padding:10px 16px;">
-                    <span style="font-size:18px;">{icon}</span>
-                    <span style="color:#8b949e;font-size:14px;">⏳ {label}...</span>
-                </div>"""
-            pipeline_html += "</div>"
+            progress_bar = st.progress(0, text="Starting pipeline...")
+            status_box   = st.empty()
 
-            pipeline_box = st.empty()
-            pipeline_box.markdown(pipeline_html, unsafe_allow_html=True)
+            def update_status(step_idx: int, message: str):
+                progress_bar.progress(
+                    int((step_idx / len(steps)) * 100),
+                    text=message
+                )
+                status_box.info(f"{steps[step_idx][0]} {steps[step_idx][1]}...")
 
-            def update_pipeline(done_steps: int, current: int):
-                html = '<div style="display:flex;flex-direction:column;gap:8px;margin:16px 0;">'
-                for idx, (icon, label, color) in enumerate(steps):
-                    if idx < done_steps:
-                        status_icon = "✅"
-                        text_color  = color
-                        bg          = "#0d1f0d"
-                        border      = "#238636"
-                    elif idx == current:
-                        status_icon = "⚡"
-                        text_color  = "#fff"
-                        bg          = "#1f2d1f"
-                        border      = color
-                    else:
-                        status_icon = "⏳"
-                        text_color  = "#8b949e"
-                        bg          = "#161b22"
-                        border      = "#30363d"
-                    html += f"""
-                    <div style="display:flex;align-items:center;gap:12px;
-                                background:{bg};border:1px solid {border};
-                                border-radius:8px;padding:10px 16px;
-                                transition:all 0.3s;">
-                        <span style="font-size:18px;">{icon}</span>
-                        <span style="color:{text_color};font-size:14px;">
-                            {status_icon} {label}...
-                        </span>
-                    </div>"""
-                html += "</div>"
-                pipeline_box.markdown(html, unsafe_allow_html=True)
-
-            # ── Run pipeline ──────────────────────────────
-            update_pipeline(0, 0)
+            # ── Stage 1: Validate ─────────────────────────
+            update_status(0, "Validating dataset...")
             issues_agent = run_all_checks(df_agent)
             score_agent  = calculate_score(issues_agent, len(df_agent))
 
-            update_pipeline(1, 1)
+            # ── Stage 2: Monitor Agent ─────────────────────
+            update_status(1, "Monitor Agent classifying issues...")
             monitor_result = monitor_agent.run(issues_agent, score_agent)
 
-            update_pipeline(2, 2)
+            # ── Stage 3: Root Cause Agent ──────────────────
+            update_status(2, "Root Cause Agent investigating...")
             df_info = {
                 "rows":         len(df_agent),
                 "cols":         len(df_agent.columns),
@@ -542,10 +454,12 @@ with main_tab4:
                 df_info,
             )
 
-            update_pipeline(3, 3)
+            # ── Stage 4: Recommendation Agent ─────────────
+            update_status(3, "Recommendation Agent generating fixes...")
             recommendations = recommendation_agent.run(root_causes, agent_name)
 
-            update_pipeline(4, 4)
+            # ── Stage 5: Report Agent ──────────────────────
+            update_status(4, "Report Agent writing executive summary...")
             report = report_agent.run(
                 monitor_result,
                 root_causes,
@@ -553,103 +467,71 @@ with main_tab4:
                 score_agent,
                 agent_name,
             )
-            update_pipeline(5, 5)
+
+            progress_bar.progress(100, text="Pipeline complete!")
+            status_box.success("✅ Agent pipeline complete!")
 
             st.divider()
 
             # ── Score banner ──────────────────────────────
-            alert_colors = {
-                "critical": "#f85149",
-                "high":     "#e3b341",
-                "medium":   "#79c0ff",
-                "low":      "#3fb950",
-            }
-            alert_color = alert_colors.get(monitor_result["overall_level"], "#8b949e")
-
             col1, col2, col3, col4 = st.columns(4)
-            col1.metric("Quality Score",    f"{score_agent['total']} / 100")
-            col2.metric("Grade",            score_agent["grade"])
-            col3.metric("Total Findings",   monitor_result["total_findings"])
-            col4.metric("Alert Level",      monitor_result["overall_level"].upper())
+            col1.metric("Quality Score",  f"{score_agent['total']} / 100")
+            col2.metric("Grade",          score_agent["grade"])
+            col3.metric("Total Findings", monitor_result["total_findings"])
+            col4.metric("Alert Level",    monitor_result["overall_level"].upper())
 
             st.divider()
 
             # ── Monitor findings ──────────────────────────
-            st.markdown("### 📡 Monitor Agent — Issue Classification")
-            severity_map = {
-                "critical": ("#f85149", "#2d0f0f"),
-                "high":     ("#e3b341", "#2d1f0e"),
-                "medium":   ("#79c0ff", "#0d1f2d"),
-                "low":      ("#3fb950", "#0d1f0d"),
+            st.subheader("📡 Monitor Agent — Issue Classification")
+            severity_icons = {
+                "critical": "🔴",
+                "high":     "🟠",
+                "medium":   "🟡",
+                "low":      "🟢",
             }
             for f in monitor_result["findings"]:
-                color, bg = severity_map.get(f["severity"], ("#8b949e", "#161b22"))
-                st.markdown(f"""
-                <div style="background:{bg};border-left:3px solid {color};
-                            border-radius:6px;padding:10px 16px;margin:6px 0;">
-                    <span style="color:{color};font-weight:600;font-size:12px;">
-                        {f['severity'].upper()}
-                    </span>
-                    <span style="color:#e6edf3;font-size:14px;margin-left:12px;">
-                        {f['message']}
-                    </span>
-                </div>
-                """, unsafe_allow_html=True)
+                icon = severity_icons.get(f["severity"], "⚪")
+                st.write(f"{icon} **{f['severity'].upper()}** — {f['message']}")
 
             st.divider()
 
             # ── Root cause findings ───────────────────────
-            st.markdown("### 🔬 Root Cause Agent — Investigation Results")
+            st.subheader("🔬 Root Cause Agent — Investigation Results")
             for i, f in enumerate(root_causes, 1):
-                color, bg = severity_map.get(f["severity"], ("#8b949e", "#161b22"))
-                with st.expander(f"{i}. [{f['severity'].upper()}] {f['column']} — {f['issue_type']}"):
-                    st.markdown(f"""
-                    <div style="background:#161b22;border-radius:8px;padding:16px;margin-bottom:8px;">
-                        <div style="color:#8b949e;font-size:12px;">ISSUE</div>
-                        <div style="color:#e6edf3;margin-top:4px;">{f['message']}</div>
-                    </div>
-                    <div style="background:#1a1f2e;border-radius:8px;padding:16px;margin-bottom:8px;">
-                        <div style="color:#8b949e;font-size:12px;">ROOT CAUSE</div>
-                        <div style="color:#e3b341;margin-top:4px;font-weight:500;">
-                            {f['root_cause']}
-                        </div>
-                    </div>
-                    <div style="background:#161b22;border-radius:8px;padding:16px;">
-                        <div style="color:#8b949e;font-size:12px;">EXPLANATION</div>
-                        <div style="color:#e6edf3;margin-top:4px;">{f['explanation']}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    st.progress(f["confidence"] / 100,
-                                text=f"Confidence: {f['confidence']}%")
+                icon = severity_icons.get(f["severity"], "⚪")
+                with st.expander(f"{i}. {icon} [{f['severity'].upper()}] {f['column']} — {f['issue_type']}"):
+                    st.markdown("**Issue:**")
+                    st.write(f["message"])
+                    st.markdown("**Root Cause:**")
+                    st.warning(f["root_cause"])
+                    st.markdown("**Explanation:**")
+                    st.write(f["explanation"])
+                    st.progress(
+                        f["confidence"] / 100,
+                        text=f"Confidence: {f['confidence']}%"
+                    )
 
             st.divider()
 
             # ── Recommendations ───────────────────────────
-            st.markdown("### 💡 Recommendation Agent — Action Items")
-            priority_map = {
-                "immediate":  ("#f85149", "#2d0f0f", "🔴"),
-                "short-term": ("#e3b341", "#2d1f0e", "🟡"),
-                "long-term":  ("#3fb950", "#0d1f0d", "🟢"),
+            st.subheader("💡 Recommendation Agent — Action Items")
+            priority_icons = {
+                "immediate":  "🔴",
+                "short-term": "🟡",
+                "long-term":  "🟢",
             }
             for i, r in enumerate(recommendations, 1):
-                color, bg, icon = priority_map.get(r["priority"], ("#8b949e", "#161b22", "⚪"))
+                icon = priority_icons.get(r["priority"], "⚪")
                 with st.expander(f"{icon} {i}. [{r['priority'].upper()}] {r['column']} — {r['issue_type']}"):
-                    st.markdown(f"""
-                    <div style="background:#161b22;border-radius:8px;padding:16px;margin-bottom:8px;">
-                        <div style="color:#8b949e;font-size:12px;">FIX</div>
-                        <div style="color:#e6edf3;margin-top:4px;">{r['fix']}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.markdown("**Fix:**")
+                    st.write(r["fix"])
+                    st.markdown("**Code hint:**")
                     st.code(r["code_hint"], language="python")
                     st.caption(f"Root cause: {r['root_cause']} ({r['confidence']}% confidence)")
 
             st.divider()
 
             # ── Executive report ──────────────────────────
-            st.markdown("### 📝 Report Agent — Executive Summary")
-            st.markdown(f"""
-            <div style="background:#0d1117;border:1px solid #30363d;
-                        border-radius:12px;padding:24px;margin-bottom:16px;">
-            """, unsafe_allow_html=True)
+            st.subheader("📝 Report Agent — Executive Summary")
             st.markdown(report)
-            st.markdown("</div>", unsafe_allow_html=True)
